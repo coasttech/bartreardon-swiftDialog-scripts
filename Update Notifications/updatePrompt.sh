@@ -24,14 +24,13 @@ getMajorVersion() {
 }
 
 iconForMajorVer() {
-    # OS icons gethered from the App Store
     majorversion=$1
 
     declare -A macosIcon=(
-    [14]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/53/7b/21/537b2109-d127-ba55-95da-552ec54b1d7e/ProductPageIcon.png/460x0w.webp"
-    [13]="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/01/11/29/01112962-0b21-4351-3e51-28dc1d7fe0a7/ProductPageIcon.png/460x0w.webp"
-    [12]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/fc/5f/46/fc5f4610-1647-e0bb-197d-a5a447ec3965/ProductPageIcon.png/460x0w.webp"
-    [11]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/48/4b/eb/484beb20-2c97-1f72-cc11-081b82b1f920/ProductPageIcon.png/460x0w.webp"
+        [14]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/53/7b/21/537b2109-d127-ba55-95da-552ec54b1d7e/ProductPageIcon.png/460x0w.webp"
+        [13]="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/01/11/29/01112962-0b21-4351-3e51-28dc1d7fe0a7/ProductPageIcon.png/460x0w.webp"
+        [12]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/fc/5f/46/fc5f4610-1647-e0bb-197d-a5a447ec3965/ProductPageIcon.png/460x0w.webp"
+        [11]="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/48/4b/eb/484beb20-2c97-1f72-cc11-081b82b1f920/ProductPageIcon.png/460x0w.webp"
     )
     iconURL=${macosIcon[$majorversion]}
 
@@ -43,12 +42,12 @@ iconForMajorVer() {
 }
 
 json_value() { # Version 2023.7.24-1 - Copyright (c) 2023 Pico Mitchell - MIT License - Full license and help info at https://randomapplications.com/json_value
-	{ set -- "$(/usr/bin/osascript -l 'JavaScript' -e 'function run(argv) { let out = argv.pop(); if ($.NSFileManager.defaultManager.fileExistsAtPath(out))' \
-		-e 'out = $.NSString.stringWithContentsOfFileEncodingError(out, $.NSUTF8StringEncoding, ObjC.wrap()).js; if (/^\s*[{[]/.test(out)) out = JSON.parse(out)' \
-		-e 'argv.forEach(key => { out = (Array.isArray(out) ? (/^-?\d+$/.test(key) ? (key = +key, out[key < 0 ? (out.length + key) : key]) : (key === "=" ?' \
-		-e 'out.length : undefined)) : (out instanceof Object ? out[key] : undefined)); if (out === undefined) throw "Failed to retrieve key/index: " + key })' \
-		-e 'return (out instanceof Object ? JSON.stringify(out, null, 2) : out) }' -- "$@" 2>&1 >&3)"; } 3>&1
-	[ "${1##* }" != '(-2700)' ] || { set -- "json_value ERROR${1#*Error}"; >&2 printf '%s\n' "${1% *}"; false; }
+    { set -- "$(/usr/bin/osascript -l 'JavaScript' -e 'function run(argv) { let out = argv.pop(); if ($.NSFileManager.defaultManager.fileExistsAtPath(out))' \
+        -e 'out = $.NSString.stringWithContentsOfFileEncodingError(out, $.NSUTF8StringEncoding, ObjC.wrap()).js; if (/^\s*[{[]/.test(out)) out = JSON.parse(out)' \
+        -e 'argv.forEach(key => { out = (Array.isArray(out) ? (/^-?\d+$/.test(key) ? (key = +key, out[key < 0 ? (out.length + key) : key]) : (key === "=" ?' \
+        -e 'out.length : undefined)) : (out instanceof Object ? out[key] : undefined)); if (out === undefined) throw "Failed to retrieve key/index: " + key })' \
+        -e 'return (out instanceof Object ? JSON.stringify(out, null, 2) : out) }' -- "$@" 2>&1 >&3)"; } 3>&1
+    [ "${1##* }" != '(-2700)' ] || { set -- "json_value ERROR${1#*Error}"; >&2 printf '%s\n' "${1% *}"; false; }
 }
 
 getCurrentReleaseFor() {
@@ -88,29 +87,29 @@ appleReleaseNotesURL() {
 }
 
 dialogCheck() {
-	local dialogApp="/Library/Application Support/Dialog/Dialog.app"
-	local installedappversion=$(defaults read "${dialogApp}/Contents/Info.plist" CFBundleShortVersionString || echo 0)
-	local requiredVersion=0
-	if [ ! -z $1 ]; then
-		requiredVersion=$1
-	fi 
+    local dialogApp="/Library/Application Support/Dialog/Dialog.app"
+    local installedappversion=$(defaults read "${dialogApp}/Contents/Info.plist" CFBundleShortVersionString || echo 0)
+    local requiredVersion=0
+    if [ ! -z $1 ]; then
+        requiredVersion=$1
+    fi 
 
-	# Check for Dialog and install if not found
-	is-at-least $requiredVersion $installedappversion
-	local result=$?
-	if [ ! -e "${dialogApp}" ] || [ $result -ne 0 ]; then
-		dialogInstall
-	else
-		echo "Dialog found. Proceeding..."
-	fi
+    # Check for Dialog and install if not found
+    is-at-least $requiredVersion $installedappversion
+    local result=$?
+    if [ ! -e "${dialogApp}" ] || [ $result -ne 0 ]; then
+        dialogInstall
+    else
+        echo "Dialog found. Proceeding..."
+    fi
 }
 
 dialogInstall() {
-	# Get the URL of the latest PKG From the Dialog GitHub repo
-	local dialogURL=$(curl --silent --fail -L "https://api.github.com/repos/swiftDialog/swiftDialog/releases/latest" | awk -F '"' "/browser_download_url/ && /pkg\"/ { print \$4; exit }")
-	# Expected Team ID of the downloaded PKG
-	local expectedDialogTeamID="PWA5E9TQ59"
-	
+    # Get the URL of the latest PKG From the Dialog GitHub repo
+    local dialogURL=$(curl --silent --fail -L "https://api.github.com/repos/swiftDialog/swiftDialog/releases/latest" | awk -F '"' "/browser_download_url/ && /pkg\"/ { print \$4; exit }")
+    # Expected Team ID of the downloaded PKG
+    local expectedDialogTeamID="PWA5E9TQ59"
+    
     # Create temporary working directory
     local workDirectory=$( /usr/bin/basename "$0" )
     local tempDirectory=$( /usr/bin/mktemp -d "/private/tmp/$workDirectory.XXXXXX" )
@@ -120,11 +119,10 @@ dialogInstall() {
     local teamID=$(/usr/sbin/spctl -a -vv -t install "$tempDirectory/Dialog.pkg" 2>&1 | awk '/origin=/ {print $NF }' | tr -d '()')
     # Install the package if Team ID validates
     if [ "$expectedDialogTeamID" = "$teamID" ] || [ "$expectedDialogTeamID" = "" ]; then
-      /usr/sbin/installer -pkg "$tempDirectory/Dialog.pkg" -target /
+        /usr/sbin/installer -pkg "$tempDirectory/Dialog.pkg" -target /
     else
-      # displayAppleScript # uncomment this if you're using my displayAppleScript function
-      # echo "Dialog Team ID verification failed."
-      # exit 1 # uncomment this if want script to bail if Dialog install fails
+        echo "Dialog Team ID verification failed."
+        exit 1
     fi
     # Remove the temporary working directory when done
     /bin/rm -Rf "$tempDirectory"  
@@ -143,8 +141,7 @@ loggedInUser=${3:-$(stat -f%Su /dev/console)}
 requiredOSVer=${4:-$(getCurrentReleaseFor $OSVer)}
 daysUntilRequired=${5:-14}
 infolink=${6:-"$(appleReleaseNotesURL $OSVer)"}
-maxdeferrals=${6:-5}
-infolink=${7:-"$(appleReleaseNotesURL $OSVer)"}
+maxdeferrals=${7:-5}
 supportText=${8}
 macosIcon=${9:-"$(iconForMajorVer $majorVersion)"}
 dialogVersion=${10:-"2.3.2"}  # required
@@ -189,32 +186,31 @@ else
     echo "Update is now required. Requirement date $requiredByDate"
 fi
 
-
 # check dialog is installed and up to date
 dialogCheck "$dialogVersion"
 
 defarralskey="deferrals_${requiredOSVer}"
 blurscreen="noblur"
 
-
 echo "Latest release is $latestRelease released on $releaseDate"
 
-# work out remaining deferrals"
+# work out remaining deferrals
 appdomain="au.csiro.macosupdates"
-deferrals=$(defaults read ${appdomain} ${defarralskey} || echo ${maxdeferrals})
+deferrals=$(defaults read ${appdomain} ${defarralskey} 2>/dev/null || echo ${maxdeferrals})
+
 if [[ $1 == "test" ]]; then
-	echo "App domain is ${appdomain}"
-	echo "Defferal Key is ${defarralskey}"
-	echo "Deferrals is ${deferrals}"
-    echo "MAX eferrals is ${maxdeferrals}"
+    echo "App domain is ${appdomain}"
+    echo "Defferal Key is ${defarralskey}"
+    echo "Deferrals is ${deferrals}"
+    echo "MAX deferrals is ${maxdeferrals}"
     echo "requiredby is ${requiredby}"
 fi
 
 if [[ $deferrals -gt 0 ]]; then
-	button2text="Defer ($deferrals remaining)"
+    button2text="Defer ($deferrals remaining)"
 else
-	button2text="Update Required"
-    #blurscreen="blurscreen"
+    button2text="Update Required"
+    # blurscreen="blurscreen"
 fi
 
 updateselected=0
@@ -227,7 +223,7 @@ titlefont="shadow=1"
 icon="/System/Library/PreferencePanes/SoftwareUpdate.prefPane"
 message="## **${requiredOSText}** is available for install
 
-Your ${modelName} is running macOS version ${OSVer} 
+Your ${modelName} is running macOS version ${OSVer}
 
 It is important that you update to **${requiredOSText}** at your earliest convenience. Click the More Information button below for additional details.
 
@@ -244,8 +240,6 @@ overlayicon="/var/tmp/overlayicon.icns"
 
 button1text="Open Software Update"
 buttona1ction="open -b com.apple.systempreferences /System/Library/PreferencePanes/SoftwareUpdate.prefPane"
-#button2text="Contact the Service Centre"
-#button2action="https://go.csiro.au/FwLink/LogAFault"
 
 runDialog () {
     ${dialogcli} -p -o -d \
@@ -257,7 +251,7 @@ runDialog () {
                 --bannertitle \
                 --icon "${macosIcon}" \
                 --iconsize 180 \
-                --overlayicon "${overlay}" \
+                --overlayicon "${overlayicon}" \
                 --message "${message}" \
                 --infobuttontext "${infotext}" \
                 --infobuttonaction "${infolink}" \
@@ -270,8 +264,8 @@ runDialog () {
         open -b com.apple.systempreferences /System/Library/PreferencePanes/SoftwareUpdate.prefPane
     elif [[ $exitcode == 2 ]] && [[ $deferrals -gt 0 ]]; then
         updateselected=1
-  	elif [[ $exitcode == 3 ]]; then
-  		updateselected=1
+    elif [[ $exitcode == 3 ]]; then
+        updateselected=1
     fi
     if [[ $exitcode -lt 10 ]]; then
         deferrals=$(( $deferrals - 1 ))
@@ -295,7 +289,6 @@ runJamfHelper () {
         uid=$(id -u "$currentUser")
         launchctl asuser $uid open "${infolink}"
     fi
-
 }
 
 while [[ ${persistant} -eq 1 ]] || [[ ${updateselected} -eq 0 ]]
@@ -308,4 +301,3 @@ do
         updateselected=1
     fi
 done
-
